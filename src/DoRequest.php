@@ -11,11 +11,11 @@ namespace SimpleRequest;
 
 class DoRequest
 {
-    public static function get($illumination, $domain)
+    public static function get($illumination, $url)
     {
         SimpleRequest::setRequestIllumination($illumination);
 
-        SimpleRequest::setRequestDomain($domain);
+        SimpleRequest::get();
     }
 
     public static function post($illumination, $domain)

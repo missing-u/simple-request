@@ -8,11 +8,10 @@
 
 namespace SimpleRequest;
 
-use App\Models\Constants;
-use App\Modules\Exceptions\RequestFailException;
-use App\Modules\Request\SimpleRequestInterface;
 use GuzzleHttp\Client;
+use SimpleRequest\Exceptions\FailRequestException;
 use Throwable;
+
 
 class SimpleRequest
 {
@@ -48,11 +47,46 @@ class SimpleRequest
         return self::$request_domain;
     }
 
-    public static function get($path, $get_params = [])
-    {
-        // TODO: Implement get() method.
-    }
 
+    /**
+     * @param $path
+     * @param array $post_data
+     * @return mixed
+     * @throws FailRequestException
+     */
+    public static function json_post($path, $params, $queries = []) : array
+    {
+        $domain = static::getRequestDomain();
+
+        $info = self::retrieveFromPathParams($path);
+        [
+            'path'                      => $path,
+            'retrieve_params_from_path' => $retrieve_params_from_path,
+        ] = $info;
+
+        $client = new Client([
+            'base_uri' => $domain,
+            'timeout'  => Config::TIME_OUT_LIMIT,
+            'verify'   => false,//没有这个参数　https 会有问题
+        ]);
+
+        $url = static::getUrl($domain, $path);
+
+        try {
+            $response = $client->post(
+                $url,
+                [
+                    'json'  => $params,
+                    'query' => array_merge($queries, $retrieve_params_from_path),
+                ]
+            );
+        } catch (Throwable $exception) {
+            throw new FailRequestException(self::getRequestIllumination(), $url, $params, $exception, 'POST');
+        }
+
+        return static::tentativeParseResponse($response);
+
+    }
 
     public static function tentativeParseResponse($response) : array
     {
@@ -69,7 +103,7 @@ class SimpleRequest
      * @param $path
      * @param array $post_data
      * @return mixed
-     * @throws RequestFailException
+     * @throws FailRequestException
      */
     public static function form_params_post_with_query($path, $params, array $url_params = []) : array
     {
@@ -83,7 +117,7 @@ class SimpleRequest
 
         $client = new Client([
             'base_uri' => $domain,
-            'timeout'  => Constants::TIME_OUT_LIMIT,
+            'timeout'  => Config::TIME_OUT_LIMIT,
             'verify'   => false,//没有这个参数　https 会有问题
         ]);
 
@@ -99,7 +133,7 @@ class SimpleRequest
                 $options
             );
         } catch (Throwable $exception) {
-            throw new RequestFailException(self::getRequestIllumination(), $url, $options, $exception,'POST');
+            throw new FailRequestException(self::getRequestIllumination(), $url, $options, $exception, 'POST');
         }
 
         return static::tentativeParseResponse($response);
@@ -110,7 +144,7 @@ class SimpleRequest
      * @param $path
      * @param array $post_data
      * @return mixed
-     * @throws RequestFailException
+     * @throws FailRequestException
      */
     public static function form_params_post($path, $params) : array
     {
@@ -137,9 +171,9 @@ class SimpleRequest
      * @param $path
      * @param array $post_data
      * @return mixed
-     * @throws RequestFailException
+     * @throws FailRequestException
      */
-    public static function json_post($path, $params, $queries = []) : array
+    public static function json_get($path, $params, $queries = []) : array
     {
         $domain = static::getRequestDomain();
 
@@ -151,14 +185,14 @@ class SimpleRequest
 
         $client = new Client([
             'base_uri' => $domain,
-            'timeout'  => Constants::TIME_OUT_LIMIT,
+            'timeout'  => Config::TIME_OUT_LIMIT,
             'verify'   => false,//没有这个参数　https 会有问题
         ]);
 
         $url = static::getUrl($domain, $path);
 
         try {
-            $response = $client->post(
+            $response = $client->get(
                 $url,
                 [
                     'json'  => $params,
@@ -166,7 +200,7 @@ class SimpleRequest
                 ]
             );
         } catch (Throwable $exception) {
-            throw new RequestFailException(self::getRequestIllumination(), $url, $params, $exception,'POST');
+            throw new FailRequestException(self::getRequestIllumination(), $url, $params, $exception, 'POST');
         }
 
         return static::tentativeParseResponse($response);
