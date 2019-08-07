@@ -12,15 +12,16 @@ use GuzzleHttp\Client;
 use SimpleRequest\Exceptions\FailRequestException;
 use Throwable;
 
-
 class SimpleRequest
 {
-    public static $request_domain = null;
+    use SimpleRequestTrait;
+
+    private static $request_domain = null;
 
     /**
      * @var string 请求说明
      */
-    public static $request_illumination;
+    private static $request_illumination;
 
     /**
      * @return string
@@ -37,7 +38,6 @@ class SimpleRequest
     {
         self::$request_domain = $request_domain;
     }
-
 
     /**
      * @return string
@@ -58,7 +58,7 @@ class SimpleRequest
     {
         $domain = static::getRequestDomain();
 
-        $info = self::retrieveFromPathParams($path);
+        $info = self::url_parse_info($path);
         [
             'path'                      => $path,
             'retrieve_params_from_path' => $retrieve_params_from_path,
@@ -66,7 +66,7 @@ class SimpleRequest
 
         $client = new Client([
             'base_uri' => $domain,
-            'timeout'  => Config::TIME_OUT_LIMIT,
+            'timeout'  => RequestConfig::TIME_OUT_LIMIT,
             'verify'   => false,//没有这个参数　https 会有问题
         ]);
 
@@ -90,14 +90,15 @@ class SimpleRequest
 
     public static function tentativeParseResponse($response) : array
     {
-        return json_decode($response->getBody()->getContents(), true);
-    }
+        $contents = $response->getBody()->getContents();
 
-    public static function wrapPostParams($post_params)
-    {
-        // TODO: Implement wrapPostParams() method.
-    }
+        //laravel 某些情况下返回中带有空格
+        //尝试过　如果 如果　json_decode(" "); 则得到的值是　null
+        //所有　这里使用　trim 并不影响
+        $contents = trim($contents);
 
+        return json_decode($contents, true);
+    }
 
     /**
      * @param $path
@@ -109,7 +110,7 @@ class SimpleRequest
     {
         $domain = static::getRequestDomain();
 
-        $info = self::retrieveFromPathParams($path);
+        $info = self::url_parse_info($path);
         [
             'path'                      => $path,
             'retrieve_params_from_path' => $retrieve_params_from_path,
@@ -117,7 +118,7 @@ class SimpleRequest
 
         $client = new Client([
             'base_uri' => $domain,
-            'timeout'  => Config::TIME_OUT_LIMIT,
+            'timeout'  => RequestConfig::TIME_OUT_LIMIT,
             'verify'   => false,//没有这个参数　https 会有问题
         ]);
 
@@ -167,78 +168,5 @@ class SimpleRequest
     }
 
 
-    /**
-     * @param $path
-     * @param array $post_data
-     * @return mixed
-     * @throws FailRequestException
-     */
-    public static function json_get($path, $params, $queries = []) : array
-    {
-        $domain = static::getRequestDomain();
-
-        $info = self::retrieveFromPathParams($path);
-        [
-            'path'                      => $path,
-            'retrieve_params_from_path' => $retrieve_params_from_path,
-        ] = $info;
-
-        $client = new Client([
-            'base_uri' => $domain,
-            'timeout'  => Config::TIME_OUT_LIMIT,
-            'verify'   => false,//没有这个参数　https 会有问题
-        ]);
-
-        $url = static::getUrl($domain, $path);
-
-        try {
-            $response = $client->get(
-                $url,
-                [
-                    'json'  => $params,
-                    'query' => array_merge($queries, $retrieve_params_from_path),
-                ]
-            );
-        } catch (Throwable $exception) {
-            throw new FailRequestException(self::getRequestIllumination(), $url, $params, $exception, 'POST');
-        }
-
-        return static::tentativeParseResponse($response);
-
-    }
-
-    public static function retrieveFromPathParams($path)
-    {
-
-        $path_arr = explode('?', $path);
-
-        $path = $path_arr[ 0 ];
-
-        array_shift($path_arr);
-
-        $retrieve_params_from_path = [];
-
-        array_map(function ($item) use (&$retrieve_params_from_path) {
-            try {
-                $info = explode('=', $item);
-
-//                $val = trim($info[ 1 ], '/');
-                $val = $info[ 1 ];
-
-                $key = $info[ 0 ];
-
-                $retrieve_params_from_path[ $key ] = $val;
-
-            } catch (Throwable $exception) {
-
-            }
-
-        }, $path_arr);
-
-        return [
-            'path'                      => $path,
-            'retrieve_params_from_path' => $retrieve_params_from_path,
-        ];
-    }
 
 }
