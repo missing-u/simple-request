@@ -9,7 +9,7 @@
 namespace SimpleRequest;
 
 
-class Config
+interface ConfigInterface
 {
-    const TIME_OUT_LIMIT = 10;
+    public function get_instance();
 }
