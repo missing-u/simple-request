@@ -28,4 +28,6 @@ interface ConfigInterface
     public function getLogInstance() : ?RequestLogInterface;
 
     public function getRequestMethod();
+
+    public function getRequestExpiredTime();
 }

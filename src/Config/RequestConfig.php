@@ -34,6 +34,8 @@ class RequestConfig implements ConfigInterface
 
     public $request_options;
 
+    public $request_expired_time;
+
     public function __construct(
         $illumination,
         $complete_url,
@@ -66,7 +68,7 @@ class RequestConfig implements ConfigInterface
         $this->request_method = $method;
 
 
-        $query                 =
+        $query =
             array_merge($this->queries_retrieve_from_url, $params);
 
         //最大值的形式请求　方便调试
@@ -134,5 +136,10 @@ class RequestConfig implements ConfigInterface
     public function getRequestMethod()
     {
         return $this->request_method;
+    }
+
+    public function getRequestExpiredTime()
+    {
+        return $this->request_expired_time;
     }
 }
