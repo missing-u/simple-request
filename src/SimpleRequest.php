@@ -28,7 +28,7 @@ class SimpleRequest
      * @return array
      * @throws Exceptions\FailRequestException
      */
-    public static function json_post($illumination, $complete_url, $params) : array
+    public static function json_post($illumination, $complete_url, $params = []) : array
     {
         $config = RequestConfigFactory::complete_path_config_of_post_method($illumination, $complete_url, $params);
 
@@ -42,7 +42,7 @@ class SimpleRequest
      * @return array
      * @throws Exceptions\FailRequestException
      */
-    public static function json_get($illumination, $complete_url, $params) : array
+    public static function json_get($illumination, $complete_url, $params = []) : array
     {
         $config = RequestConfigFactory::complete_path_config_of_get_method($illumination, $complete_url, $params);
 
@@ -56,7 +56,7 @@ class SimpleRequest
      * @return array
      * @throws Exceptions\FailRequestException
      */
-    public static function json_get_separate($illumination, $domain, $path, $params) : array
+    public static function json_get_separate($illumination, $domain, $path, $params = []) : array
     {
         $complete_url = CombineDomainWithPathTool::main($domain, $path);
 
@@ -70,7 +70,7 @@ class SimpleRequest
      * @return array
      * @throws Exceptions\FailRequestException
      */
-    public static function json_post_separate($illumination, $domain, $path, $params) : array
+    public static function json_post_separate($illumination, $domain, $path, $params = []) : array
     {
         $complete_url = CombineDomainWithPathTool::main($domain, $path);
 

@@ -25,7 +25,7 @@ class RequestConfigFactory
     public static function complete_path_config_of_post_method(
         $illumination,
         $complete_url,
-        $params,
+        $params = [],
         $log_instance = null
     ) : ConfigInterface {
 
@@ -51,7 +51,7 @@ class RequestConfigFactory
     public static function complete_path_config_of_get_method(
         $illumination,
         $complete_url,
-        $params,
+        $params = [],
         $log_instance = null
     ) : ConfigInterface {
 
