@@ -8,16 +8,23 @@
 
 namespace SimpleRequest;
 
+<<<<<<< HEAD
 use SimpleRequest\Config\RequestConfigFactory;
 use SimpleRequest\Traits\CombineDomainWithPathTool;
 use SimpleRequest\Traits\CombineDomainWithPathTrait;
 
 /**
+=======
+/**
+ * 只是叫中介者模式　并不是真实的实现了　中介者
+ * 现在依旧在思考如何处理这个问题
+>>>>>>> eb27a5aa1ccb0174213e45948cd7bf3d5f44b3d9
  * Class SimpleRequestMediator
  * @package SimpleRequest
  */
 class SimpleRequest
 {
+<<<<<<< HEAD
 
     use CombineDomainWithPathTrait;
 
@@ -59,9 +66,20 @@ class SimpleRequest
     public static function json_get_separate($illumination, $domain, $path, $params) : array
     {
         $complete_url = CombineDomainWithPathTool::main($domain, $path);
+=======
+    public static function json_get($config, array $params) : array
+    {
+        SimpleRequestService::json_get($complete_path, $params);
+    }
+
+    //todo
+    public function json_get_by_config($config, $data)
+    {
+>>>>>>> eb27a5aa1ccb0174213e45948cd7bf3d5f44b3d9
 
         return self::json_get($illumination, $complete_url, $params);
     }
+<<<<<<< HEAD
 
     /**
      * @param $illumination
@@ -78,4 +96,6 @@ class SimpleRequest
     }
 
 
+=======
+>>>>>>> eb27a5aa1ccb0174213e45948cd7bf3d5f44b3d9
 }
