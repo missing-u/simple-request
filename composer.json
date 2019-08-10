@@ -1,0 +1,23 @@
+{
+    "name": "yiche/simple-request",
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "杨益民",
+            "email": "744541711@qq.com"
+        }
+    ],
+    "require": {
+        "php": ">=7.2.0",
+        "guzzlehttp/guzzle": "^6.3",
+        "ext-json": "*"
+    },
+    "require-dev": {
+        "roave/security-advisories": "dev-master"
+    },
+    "autoload": {
+        "psr-4": {
+            "SimpleRequest\\": "src/"
+        }
+    }
+}
