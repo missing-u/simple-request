@@ -8,237 +8,74 @@
 
 namespace SimpleRequest;
 
-use GuzzleHttp\Client;
-use SimpleRequest\Exceptions\FailRequestException;
-use Throwable;
+use SimpleRequest\Config\RequestConfigFactory;
+use SimpleRequest\Traits\CombineDomainWithPathTool;
+use SimpleRequest\Traits\CombineDomainWithPathTrait;
 
-
+/**
+ * Class SimpleRequestMediator
+ * @package SimpleRequest
+ */
 class SimpleRequest
 {
-    public static $request_domain = null;
+
+    use CombineDomainWithPathTrait;
 
     /**
-     * @var string 请求说明
+     * @param $illumination
+     * @param $complete_url
+     * @param $params
+     * @return array
+     * @throws Exceptions\FailRequestException
      */
-    public static $request_illumination;
-
-    /**
-     * @return string
-     */
-    public static function getRequestIllumination() : string
+    public static function json_post($illumination, $complete_url, $params) : array
     {
-        return self::$request_illumination;
-    }
+        $config = RequestConfigFactory::complete_path_config_of_post_method($illumination, $complete_url, $params);
 
-    /**
-     * @param null $request_domain
-     */
-    public static function setRequestDomain($request_domain) : void
-    {
-        self::$request_domain = $request_domain;
-    }
-
-
-    /**
-     * @return string
-     */
-    public static function getRequestDomain() : string
-    {
-        return self::$request_domain;
-    }
-
-
-    /**
-     * @param $path
-     * @param array $post_data
-     * @return mixed
-     * @throws FailRequestException
-     */
-    public static function json_post($path, $params, $queries = []) : array
-    {
-        $domain = static::getRequestDomain();
-
-        $info = self::retrieveFromPathParams($path);
-        [
-            'path'                      => $path,
-            'retrieve_params_from_path' => $retrieve_params_from_path,
-        ] = $info;
-
-        $client = new Client([
-            'base_uri' => $domain,
-            'timeout'  => Config::TIME_OUT_LIMIT,
-            'verify'   => false,//没有这个参数　https 会有问题
-        ]);
-
-        $url = static::getUrl($domain, $path);
-
-        try {
-            $response = $client->post(
-                $url,
-                [
-                    'json'  => $params,
-                    'query' => array_merge($queries, $retrieve_params_from_path),
-                ]
-            );
-        } catch (Throwable $exception) {
-            throw new FailRequestException(self::getRequestIllumination(), $url, $params, $exception, 'POST');
-        }
-
-        return static::tentativeParseResponse($response);
-
-    }
-
-    public static function tentativeParseResponse($response) : array
-    {
-        return json_decode($response->getBody()->getContents(), true);
-    }
-
-    public static function wrapPostParams($post_params)
-    {
-        // TODO: Implement wrapPostParams() method.
-    }
-
-
-    /**
-     * @param $path
-     * @param array $post_data
-     * @return mixed
-     * @throws FailRequestException
-     */
-    public static function form_params_post_with_query($path, $params, array $url_params = []) : array
-    {
-        $domain = static::getRequestDomain();
-
-        $info = self::retrieveFromPathParams($path);
-        [
-            'path'                      => $path,
-            'retrieve_params_from_path' => $retrieve_params_from_path,
-        ] = $info;
-
-        $client = new Client([
-            'base_uri' => $domain,
-            'timeout'  => Config::TIME_OUT_LIMIT,
-            'verify'   => false,//没有这个参数　https 会有问题
-        ]);
-
-        $url = static::getUrl($domain, $path);
-
-        try {
-            $options  = [
-                'form_params' => $params,
-                'query'       => array_merge($retrieve_params_from_path, $url_params),
-            ];
-            $response = $client->post(
-                $url,
-                $options
-            );
-        } catch (Throwable $exception) {
-            throw new FailRequestException(self::getRequestIllumination(), $url, $options, $exception, 'POST');
-        }
-
-        return static::tentativeParseResponse($response);
-
+        return SimpleRequestService::json($config);
     }
 
     /**
-     * @param $path
-     * @param array $post_data
-     * @return mixed
-     * @throws FailRequestException
+     * @param $illumination
+     * @param $complete_url
+     * @param $params
+     * @return array
+     * @throws Exceptions\FailRequestException
      */
-    public static function form_params_post($path, $params) : array
+    public static function json_get($illumination, $complete_url, $params) : array
     {
-        return self::form_params_post_with_query($path, $params);
-    }
+        $config = RequestConfigFactory::complete_path_config_of_get_method($illumination, $complete_url, $params);
 
-    public static function getUrl($domain, $path)
-    {
-        $path = trim($path, '/');
-
-        return sprintf("%s/%s", $domain, $path);
+        return SimpleRequestService::json($config);
     }
 
     /**
-     * @param string $request_illumination
+     * @param $illumination
+     * @param $complete_url
+     * @param $params
+     * @return array
+     * @throws Exceptions\FailRequestException
      */
-    public static function setRequestIllumination(string $request_illumination) : void
+    public static function json_get_separate($illumination, $domain, $path, $params) : array
     {
-        self::$request_illumination = $request_illumination;
-    }
+        $complete_url = CombineDomainWithPathTool::main($domain, $path);
 
+        return self::json_get($illumination, $complete_url, $params);
+    }
 
     /**
-     * @param $path
-     * @param array $post_data
-     * @return mixed
-     * @throws FailRequestException
+     * @param $illumination
+     * @param $complete_url
+     * @param $params
+     * @return array
+     * @throws Exceptions\FailRequestException
      */
-    public static function json_get($path, $params, $queries = []) : array
+    public static function json_post_separate($illumination, $domain, $path, $params) : array
     {
-        $domain = static::getRequestDomain();
+        $complete_url = CombineDomainWithPathTool::main($domain, $path);
 
-        $info = self::retrieveFromPathParams($path);
-        [
-            'path'                      => $path,
-            'retrieve_params_from_path' => $retrieve_params_from_path,
-        ] = $info;
-
-        $client = new Client([
-            'base_uri' => $domain,
-            'timeout'  => Config::TIME_OUT_LIMIT,
-            'verify'   => false,//没有这个参数　https 会有问题
-        ]);
-
-        $url = static::getUrl($domain, $path);
-
-        try {
-            $response = $client->get(
-                $url,
-                [
-                    'json'  => $params,
-                    'query' => array_merge($queries, $retrieve_params_from_path),
-                ]
-            );
-        } catch (Throwable $exception) {
-            throw new FailRequestException(self::getRequestIllumination(), $url, $params, $exception, 'POST');
-        }
-
-        return static::tentativeParseResponse($response);
-
+        return self::json_post($illumination, $complete_url, $params);
     }
 
-    public static function retrieveFromPathParams($path)
-    {
-
-        $path_arr = explode('?', $path);
-
-        $path = $path_arr[ 0 ];
-
-        array_shift($path_arr);
-
-        $retrieve_params_from_path = [];
-
-        array_map(function ($item) use (&$retrieve_params_from_path) {
-            try {
-                $info = explode('=', $item);
-
-//                $val = trim($info[ 1 ], '/');
-                $val = $info[ 1 ];
-
-                $key = $info[ 0 ];
-
-                $retrieve_params_from_path[ $key ] = $val;
-
-            } catch (Throwable $exception) {
-
-            }
-
-        }, $path_arr);
-
-        return [
-            'path'                      => $path,
-            'retrieve_params_from_path' => $retrieve_params_from_path,
-        ];
-    }
 
 }

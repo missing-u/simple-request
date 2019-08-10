@@ -8,14 +8,28 @@
 
 namespace SimpleRequest\Exceptions;
 
+use SimpleRequest\Config\ConfigInterface;
+use Throwable;
+
 class FailRequestException extends BaseRequestException
 {
-    public function __construct()
+    public $request_config;
+
+    public $contain_exception;
+
+    public function getRequestConfig() : ConfigInterface
+    {
+        return $this->request_config;
+    }
+
+    public function __construct(Throwable $throwable, ConfigInterface $config)
     {
         $message = "请求失败";
 
-        $code    = 0;
+        $this->request_config = $config;
 
-        parent::__construct($message, $code, null);
+        $this->contain_exception = $throwable;
+
+        parent::__construct($message);
     }
 }
