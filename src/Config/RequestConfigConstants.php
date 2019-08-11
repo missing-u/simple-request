@@ -11,5 +11,5 @@ namespace SimpleRequest\Config;
 
 class RequestConfigConstants
 {
-    const time_out_limit = 10;//默认超时时间 可以在 req 中被覆盖
+    const default_request_expired_time = 10;//默认超时时间 可以在 req 中被覆盖
 }

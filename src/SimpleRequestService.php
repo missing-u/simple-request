@@ -11,7 +11,6 @@ namespace SimpleRequest;
 //名字不合适
 use GuzzleHttp\Client;
 use SimpleRequest\Config\ConfigInterface;
-use SimpleRequest\Config\RequestConfigConstants;
 use SimpleRequest\Exceptions\FailRequestException;
 use SimpleRequest\Traits\ResponseTrait;
 use SimpleRequest\Traits\UrlParseInfoTrait;
@@ -32,7 +31,7 @@ class SimpleRequestService
     {
         $method = $config->getRequestMethod();
 
-        $timeout_limit = RequestConfigConstants::time_out_limit;
+        $timeout_limit = $config->getRequestExpiredTime();
 
         $options = $config->getRequestOption();
 

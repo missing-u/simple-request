@@ -41,7 +41,8 @@ class RequestConfig implements ConfigInterface
         $complete_url,
         $params,
         $method,
-        RequestLogInterface $log_instance = null
+        RequestLogInterface $log_instance = null,
+        $request_expired_time = null
     ) {
         $info = $this->url_parse_info($complete_url);
 
@@ -77,6 +78,12 @@ class RequestConfig implements ConfigInterface
             'query'       => $query,
             'form_params' => $params,
         ];
+
+        if ($request_expired_time === null) {
+            $request_expired_time = RequestConfigConstants::default_request_expired_time;
+        }
+
+        $this->request_expired_time = $request_expired_time;
     }
 
     /**
