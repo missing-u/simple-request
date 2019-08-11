@@ -18,14 +18,16 @@ trait UrlParseInfoTrait
     {
         $info = parse_url($url);
 
-        $domain = sprintf('%s://%s', $info[ 'scheme' ] ?? '', $info[ 'host' ] ?? '');
+        $default_scheme = 'http';
+        
+        $domain         = sprintf('%s://%s', $info[ 'scheme' ] ?? $default_scheme, $info[ 'host' ] ?? '');
 
         $path = $info[ 'path' ] ?? '';
 
         $query_str = $info[ 'query' ] ?? '';
 
         $query_arr = explode('&', $query_str);
-        
+
         $query_arr = array_filter($query_arr);
 
         $retrieve_queries = [];
