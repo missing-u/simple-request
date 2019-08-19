@@ -44,8 +44,8 @@ class RequestConfig implements ConfigInterface
         $params,
         $method,
         RequestLogInterface $log_instance = null,
-        $request_expired_time = null,
-        $header = null
+        $header = null,
+        $request_expired_time = null
     ) {
         $info = $this->url_parse_info($complete_url);
 

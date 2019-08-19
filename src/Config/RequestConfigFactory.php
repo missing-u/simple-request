@@ -80,7 +80,8 @@ class RequestConfigFactory
         $complete_url,
         $params,
         $log_instance = null,
-        $header = null
+        $header = null,
+        $request_expired_time = null
     ) : ConfigInterface {
 
         return new RequestConfig(
@@ -89,7 +90,8 @@ class RequestConfigFactory
             $params,
             $method,
             $log_instance,
-            $header
+            $header,
+            $request_expired_time
         );
     }
 
