@@ -30,4 +30,6 @@ interface ConfigInterface
     public function getRequestMethod();
 
     public function getRequestExpiredTime();
+
+    public function getHeader();
 }

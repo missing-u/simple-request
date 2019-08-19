@@ -79,16 +79,17 @@ class RequestConfigFactory
         $illumination,
         $complete_url,
         $params,
-        $log_instance = null
+        $log_instance = null,
+        $header = null
     ) : ConfigInterface {
 
         return new RequestConfig(
-
             $illumination,
             $complete_url,
             $params,
             $method,
-            $log_instance
+            $log_instance,
+            $header
         );
     }
 

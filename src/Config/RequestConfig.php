@@ -36,13 +36,16 @@ class RequestConfig implements ConfigInterface
 
     public $request_expired_time;
 
+    public $header;
+
     public function __construct(
         $illumination,
         $complete_url,
         $params,
         $method,
         RequestLogInterface $log_instance = null,
-        $request_expired_time = null
+        $request_expired_time = null,
+        $header = null
     ) {
         $info = $this->url_parse_info($complete_url);
 
@@ -68,16 +71,23 @@ class RequestConfig implements ConfigInterface
 
         $this->request_method = $method;
 
+        $this->header = $header;
 
         $query =
             array_merge($this->queries_retrieve_from_url, $params);
 
         //最大值的形式请求　方便调试
-        $this->request_options = [
+        $options = [
             'json'        => $params,
             'query'       => $query,
             'form_params' => $params,
         ];
+
+        if ($this->header !== null) {
+            $options[ 'header' ] = $header;
+        }
+
+        $this->request_options = $options;
 
         if ($request_expired_time === null) {
             $request_expired_time = RequestConfigConstants::default_request_expired_time;
@@ -149,4 +159,11 @@ class RequestConfig implements ConfigInterface
     {
         return $this->request_expired_time;
     }
+
+    public function getHeader()
+    {
+        return $this->header;
+    }
+
+
 }

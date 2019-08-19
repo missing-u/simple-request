@@ -37,11 +37,13 @@ class SimpleRequestService
 
         $domain = $config->getDomain();
 
-        $client = new Client([
+        $default_config = [
             'base_uri' => $domain,
             'timeout'  => $timeout_limit,
             'verify'   => false,//没有这个参数　https 会有问题
-        ]);
+        ];
+
+        $client = new Client($default_config);
 
         $complete_url = $config->getCompleteUrl();
 
