@@ -84,7 +84,7 @@ class RequestConfig implements ConfigInterface
         ];
 
         if ($this->header !== null) {
-            $options[ 'header' ] = $header;
+            $options[ 'headers' ] = $header;
         }
 
         $this->request_options = $options;
