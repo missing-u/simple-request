@@ -25,7 +25,10 @@ interface ConfigInterface
 
     public function getCompleteUrl() : string;
 
-    public function getLogInstance() : ?RequestLogInterface;
+    /**
+     * @return RequestLogInterface|null
+     */
+    public function getLogInstance();
 
     public function getRequestMethod();
 

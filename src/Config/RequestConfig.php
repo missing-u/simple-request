@@ -49,11 +49,13 @@ class RequestConfig implements ConfigInterface
     ) {
         $info = $this->url_parse_info($complete_url);
 
-        [
-            'domain'           => $domain,
-            'path'             => $path,
-            'retrieve_queries' => $retrieve_queries,
-        ] = $info;
+        @list(
+            $domain,
+            $path,
+            $retrieve_queries,
+            ) = $info;
+
+        extract($info);
 
         $this->relative_path = $path;
 
