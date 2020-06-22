@@ -147,7 +147,10 @@ class RequestConfig implements ConfigInterface
         return $this->complete_url;
     }
 
-    public function getLogInstance() : ?RequestLogInterface
+    /**
+     * @return RequestLogInterface|null
+     */
+    public function getLogInstance()
     {
         return $this->log_instance;
     }
